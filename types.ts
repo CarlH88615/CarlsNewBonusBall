@@ -22,4 +22,7 @@ export interface AppState {
   currentRollover: number;
   nextDrawDate: string;
   adminPassword?: string;
+  lastAnnouncement?: string;
+  lastAnnouncementId?: string;
+  aiHistory?: {date: string, number: number}[];
 }
