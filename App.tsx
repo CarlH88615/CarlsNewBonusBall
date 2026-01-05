@@ -136,13 +136,28 @@ const App: React.FC = () => {
   useEffect(() => {
   localStorage.setItem('bonus_ball_v8', JSON.stringify(state));
   if (!supabase || !isAdmin) return;
+const getPersistedState = () => ({
+  balls: state.balls.map(ball => ({
+    number: ball.number,
+    owner: ball.owner,
+    paidUntil: ball.paidUntil
+  })),
+  history: state.history,
+  pricePerBall: state.pricePerBall,
+  currentRollover: state.currentRollover,
+  nextDrawDate: state.nextDrawDate,
+  adminPassword: state.adminPassword,
+  lastAnnouncement: state.lastAnnouncement,
+  lastAnnouncementId: state.lastAnnouncementId,
+  aiHistory: state.aiHistory
+});
 
   const saveToCloud = async () => {
     setIsSyncing(true);
     try {
       await supabase
         .from('bonus_ball_data')
-        .update({ state })
+        .update({ state: getPersistedState() })
         .eq('id', 1);
     } catch (error) {
       console.error('Supabase write error:', error);
