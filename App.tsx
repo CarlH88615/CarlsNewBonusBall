@@ -36,31 +36,35 @@ const App: React.FC = () => {
   const lastProcessedAnnouncementId = useRef<string | null>(null);
 
   const [state, setState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('bonus_ball_v8');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (!parsed.adminPassword) parsed.adminPassword = 'carl';
-        if (!parsed.aiHistory) parsed.aiHistory = [];
-        return parsed;
-      } catch (error) {
-  console.error('Supabase write error:', error);
-}
+  const saved = localStorage.getItem('bonus_ball_v8');
 
-    return {
-      balls: Array.from({ length: TOTAL_BALLS }, (_, i) => ({ 
-        number: i + 1, owner: null, paidUntil: new Date().toISOString()
-      })),
-      history: [],
-      pricePerBall: PRICE_PER_BALL,
-      currentRollover: 0,
-      nextDrawDate: getNextSaturday().toISOString(),
-      adminPassword: 'carl',
-      lastAnnouncement: '',
-      lastAnnouncementId: '',
-      aiHistory: []
-    };
-  });
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (!parsed.adminPassword) parsed.adminPassword = 'carl';
+      if (!parsed.aiHistory) parsed.aiHistory = [];
+      return parsed;
+    } catch (error) {
+      console.error('Failed to parse saved state:', error);
+    }
+  }
+
+  return {
+    balls: Array.from({ length: TOTAL_BALLS }, (_, i) => ({
+      number: i + 1,
+      owner: null,
+      paidUntil: new Date().toISOString()
+    })),
+    history: [],
+    pricePerBall: PRICE_PER_BALL,
+    currentRollover: 0,
+    nextDrawDate: getNextSaturday().toISOString(),
+    adminPassword: 'carl',
+    lastAnnouncement: '',
+    lastAnnouncementId: '',
+    aiHistory: []
+  };
+});
 
   const [followedBall, setFollowedBall] = useState<number | null>(() => {
     const saved = localStorage.getItem('followed_ball');
@@ -130,19 +134,27 @@ const App: React.FC = () => {
   }, [supabase]);
 
   useEffect(() => {
-    localStorage.setItem('bonus_ball_v8', JSON.stringify(state));
-    if (!supabase || !isAdmin) return;
-    const saveToCloud = async () => {
-      setIsSyncing(true);
-      try { await supabase
-  .from('bonus_ball_data')
-  .update({ state })
-  .eq('id', 1); }
-      catch (e) { console.error(e); } finally { setIsSyncing(false); }
-    };
-    const timer = setTimeout(saveToCloud, 2000);
-    return () => clearTimeout(timer);
-  }, [state, supabase, isAdmin]);
+  localStorage.setItem('bonus_ball_v8', JSON.stringify(state));
+  if (!supabase || !isAdmin) return;
+
+  const saveToCloud = async () => {
+    setIsSyncing(true);
+    try {
+      await supabase
+        .from('bonus_ball_data')
+        .update({ state })
+        .eq('id', 1);
+    } catch (error) {
+      console.error('Supabase write error:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const timer = setTimeout(saveToCloud, 2000);
+  return () => clearTimeout(timer);
+}, [state, supabase, isAdmin]);
+
 
   const stats = useMemo(() => {
     const paidNext = state.balls.filter(b => b.owner && new Date(b.paidUntil) >= new Date(state.nextDrawDate));
