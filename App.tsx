@@ -132,7 +132,10 @@ const App: React.FC = () => {
     if (!supabase || !isAdmin) return;
     const saveToCloud = async () => {
       setIsSyncing(true);
-      try { await supabase.from('bonus_ball_data').upsert({ id: 1, state: state }); }
+      try { await supabase
+  .from('bonus_ball_data')
+  .update({ state })
+  .eq('id', 1); }
       catch (e) { console.error(e); } finally { setIsSyncing(false); }
     };
     const timer = setTimeout(saveToCloud, 2000);
