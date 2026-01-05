@@ -43,8 +43,10 @@ const App: React.FC = () => {
         if (!parsed.adminPassword) parsed.adminPassword = 'carl';
         if (!parsed.aiHistory) parsed.aiHistory = [];
         return parsed;
-      } catch (e) { console.error(e); }
-    }
+      } catch (error) {
+  console.error('Supabase write error:', error);
+}
+
     return {
       balls: Array.from({ length: TOTAL_BALLS }, (_, i) => ({ 
         number: i + 1, owner: null, paidUntil: new Date().toISOString()
