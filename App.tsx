@@ -388,10 +388,6 @@ const sendBroadcast = async () => {
 
 
 
-  setAnnouncementText('');
-};
-
-
   const handleLogin = () => {
     if (loginPass === state.adminPassword) { setIsAdmin(true); setShowLogin(false); setLoginPass(''); }
     else alert("Invalid password");
