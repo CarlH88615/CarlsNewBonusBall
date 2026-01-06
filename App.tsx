@@ -12,7 +12,7 @@ import {
 } from './constants';
 
 const SUPABASE_URL = 'https://fsazyqcgpxvgckgllwkw.supabase.co';
-const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzYXp5cWNncHh2Z2NrZ2xsd2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzg0ODksImV4cCI6MjA4MzIxNDQ4OX0.qlLb8m3urY50iDTXjaO9y41lnHNVNWRiwEeO1_WXGqA';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
