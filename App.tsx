@@ -83,16 +83,21 @@ try {
 
   const json = subscription.toJSON();
 
-  await supabase.from('push_subscriptions').insert({
-    endpoint: json.endpoint,
-    p256dh: json.keys?.p256dh,
-    auth: json.keys?.auth,
-    balls: followedBall ? [followedBall] : [],
-    user_name: null,
-    active: true
-  });
+const { error } = await supabase.from('push_subscriptions').insert({
+  endpoint: json.endpoint,
+  p256dh: json.keys?.p256dh,
+  auth: json.keys?.auth
+});
 
-  alert('Push notifications enabled!');
+if (error) {
+  console.error('❌ Supabase insert failed', error);
+  alert('Subscription save failed');
+  return;
+}
+
+alert('Push subscription created');
+
+alert('Push notifications enabled!');
 };
 
 
