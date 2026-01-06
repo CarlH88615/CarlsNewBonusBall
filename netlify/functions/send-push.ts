@@ -18,18 +18,19 @@ export const handler: Handler = async () => {
     .from('push_subscriptions')
     .select('*');
 
-  if (error) {
+  if (error || !data) {
     return { statusCode: 500, body: 'Failed to load subscriptions' };
   }
 
   const payload = JSON.stringify({
     title: 'Bonus Ball Update',
-    body: 'New announcement available!'
+    body: 'New announcement available!',
+    url: '/'
   });
 
-  await Promise.allSettled(
-    data.map(sub =>
-      webpush.sendNotification(
+  for (const sub of data) {
+    try {
+      await webpush.sendNotification(
         {
           endpoint: sub.endpoint,
           keys: {
@@ -37,10 +38,15 @@ export const handler: Handler = async () => {
             auth: sub.auth
           }
         },
-        payload
-      )
-    )
-  );
+        payload,
+        {
+          TTL: 60
+        }
+      );
+    } catch (err) {
+      console.error('Push failed for endpoint', sub.endpoint, err);
+    }
+  }
 
   return {
     statusCode: 200,
