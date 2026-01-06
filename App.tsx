@@ -145,17 +145,7 @@ const subscribeToPush = async () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (state.lastAnnouncementId && state.lastAnnouncementId !== lastProcessedAnnouncementId.current) {
-      lastProcessedAnnouncementId.current = state.lastAnnouncementId;
-      if (Notification.permission === 'granted' && state.lastAnnouncement) {
-        new Notification("Bonus Ball Update", {
-          body: state.lastAnnouncement,
-          icon: 'https://cdn-icons-png.flaticon.com/512/3551/3551525.png'
-        });
-      }
-    }
-  }, [state.lastAnnouncementId, state.lastAnnouncement]);
+ 
 
 useEffect(() => {
   const loadFromCloud = async () => {
@@ -424,7 +414,7 @@ const getPersistedState = () => ({
           </button>
         </div>
       </header>
-
+{/*
       {state.lastAnnouncement && (
         <div className="max-w-7xl mx-auto px-6 mt-6">
           <div className="bg-indigo-600/20 border border-indigo-500/30 rounded-2xl p-4 flex items-center gap-4">
@@ -433,7 +423,7 @@ const getPersistedState = () => ({
           </div>
         </div>
       )}
-
+*/}
       <main className="max-w-7xl mx-auto p-6 md:p-12 space-y-12">
         {activeTab === 'players' && (
           <div className="space-y-10">
