@@ -103,33 +103,61 @@ const App: React.FC = () => {
 useEffect(() => {
   const loadFromCloud = async () => {
     setIsSyncing(true);
-    try {const { data } = await supabase.from('bonus_ball_data').select('state').eq('id', 1).maybeSingle();
- if (data?.state && Array.isArray(data.state.balls)) {
-  setState(prev => ({
-    ...prev,
-    ...data.state,
-    balls: data.state.balls,
-    aiHistory: data.state.aiHistory || prev.aiHistory || [],
-    adminPassword: data.state.adminPassword || prev.adminPassword || 'carl'
-  }));
+    try {
+      const { data } = await supabase
+        .from('bonus_ball_data')
+        .select('state')
+        .eq('id', 1)
+        .maybeSingle();
 
-  if (!lastProcessedAnnouncementId.current) {
-    lastProcessedAnnouncementId.current =
-      data.state.lastAnnouncementId || 'initial';
-  }
-}
+      if (data?.state && Array.isArray(data.state.balls)) {
+        setState(prev => ({
+          ...prev,
+          ...data.state,
+          balls: data.state.balls,
+          aiHistory: data.state.aiHistory || prev.aiHistory || [],
+          adminPassword: data.state.adminPassword || prev.adminPassword || 'carl'
+        }));
 
-    loadFromCloud();
-
-    const channel = supabase.channel('schema-db-changes')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'bonus_ball_data' }, 
-        (payload) => {
-          if (payload.new.state) setState(payload.new.state);
+        if (!lastProcessedAnnouncementId.current) {
+          lastProcessedAnnouncementId.current =
+            data.state.lastAnnouncementId || 'initial';
         }
-      ).subscribe();
+      }
+    } catch (error) {
+      console.error('Supabase load error:', error);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
-    return () => { supabase.removeChannel(channel); };
-  }, [supabase]);
+  loadFromCloud();
+
+  const channel = supabase
+    .channel('schema-db-changes')
+    .on(
+      'postgres_changes',
+      { event: 'UPDATE', schema: 'public', table: 'bonus_ball_data' },
+      payload => {
+        if (
+          payload.new?.state &&
+          Array.isArray(payload.new.state.balls)
+        ) {
+          setState(prev => ({
+            ...prev,
+            ...payload.new.state,
+            balls: payload.new.state.balls
+          }));
+        }
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, []);
+
 
   useEffect(() => {
   localStorage.setItem('bonus_ball_v8', JSON.stringify(state));
