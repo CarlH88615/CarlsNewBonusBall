@@ -14,7 +14,8 @@ webpush.setVapidDetails(
 );
 
 
-export const handler: Handler = async () => {
+export const handler: Handler = async (event) => {
+  const { title, body } = JSON.parse(event.body || '{}');
   const { data, error } = await supabase
     .from('push_subscriptions')
     .select('*');
@@ -24,10 +25,11 @@ export const handler: Handler = async () => {
   }
 
   const payload = JSON.stringify({
-    title: 'Bonus Ball Update',
-    body: 'New announcement available!',
-    url: '/'
-  });
+  title: title || 'Bonus Ball Update',
+  body: body || 'Open the app for details',
+  url: '/'
+});
+
 
   for (const sub of data) {
     try {
