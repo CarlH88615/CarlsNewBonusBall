@@ -15,6 +15,8 @@ const SUPABASE_URL = 'https://fsazyqcgpxvgckgllwkw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzYXp5cWNncHh2Z2NrZ2xsd2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzg0ODksImV4cCI6MjA4MzIxNDQ4OX0.qlLb8m3urY50iDTXjaO9y41lnHNVNWRiwEeO1_WXGqA';
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const VAPID_PUBLIC_KEY = 'BLSiWxqS-_oetCeWMd6zaKlR9dWIcUaOZq1E3DJ_5Vu-kpaSPCRtnRSeSQoE-2q0jCf3nqRvz_VAKByJxUEX3TM';
+
 
 const App: React.FC = () => {
   const getNextSaturday = (baseDate = new Date()) => {
@@ -25,7 +27,33 @@ const App: React.FC = () => {
     return d;
   };
 
-  
+  const subscribeToPush = async () => {
+  if (!('serviceWorker' in navigator)) {
+    alert('Service workers not supported');
+    return;
+  }
+
+  const registration = await navigator.serviceWorker.ready;
+
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: Uint8Array.from(
+      atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/')),
+      c => c.charCodeAt(0)
+    )
+  });
+
+  const json = subscription.toJSON();
+
+  await supabase.from('push_subscriptions').insert({
+    endpoint: json.endpoint,
+    p256dh: json.keys?.p256dh,
+    auth: json.keys?.auth
+  });
+
+  alert('Push notifications enabled!');
+};
+
 
   const [quotaWarning, setQuotaWarning] = useState<string | null>(null);
   const [groundingSources, setGroundingSources] = useState<any[]>([]);
@@ -554,6 +582,13 @@ const getPersistedState = () => ({
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Manual Adjustment (Weeks)</label>
                         <div className="flex gap-2">
+                        <button
+  onClick={subscribeToPush}
+  className="mt-4 px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
+>
+  Enable Push Notifications
+</button>
+
                           <input type="number" min="1" className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 outline-none focus:border-indigo-600" value={customWeeks} onChange={e => setCustomWeeks(parseInt(e.target.value) || 1)} />
                           <button onClick={() => addWeeks(customWeeks)} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase shadow-lg shadow-indigo-200">Add Weeks</button>
                         </div>
