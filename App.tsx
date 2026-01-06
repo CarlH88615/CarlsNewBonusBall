@@ -502,72 +502,105 @@ const getPersistedState = () => ({
       </main>
 
       {isAdmin && (
-        <footer className="fixed bottom-0 left-0 right-0 glass-card p-6 z-40 animate-slide-up border-t-2 border-indigo-400">
-          <div className="max-w-7xl mx-auto space-y-6">
-            <div className="flex flex-col xl:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-6">
-              <div className="flex flex-wrap items-center justify-center gap-6">
-                <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl border border-slate-200">
-                  <span className="text-[9px] font-black uppercase opacity-50 ml-2">Draw Date:</span>
-                  <input type="date" className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold outline-none text-slate-900" value={new Date(state.nextDrawDate).toISOString().split('T')[0]} onChange={e => {
-                    const date = new Date(e.target.value);
-                    date.setHours(19, 45, 0, 0);
-                    setState(p => ({...p, nextDrawDate: date.toISOString()}));
-                  }} />
-                </div>
-                <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl border border-slate-200">
-                  <span className="text-[9px] font-black uppercase opacity-50 ml-2">Win No:</span>
-                  <input type="number" className="w-16 bg-white border border-slate-200 rounded-xl px-2 py-2 text-center text-lg font-black text-slate-900" value={winningBall || ''} onChange={e => setWinningBall(parseInt(e.target.value) || null)} />
-                  <button onClick={fetchResult} disabled={isFetchingResult} className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl text-[9px] font-black uppercase disabled:opacity-50">
-                    {isFetchingResult ? '...' : '⚡ AI Sync'}
-                  </button>
-                </div>
-                <button onClick={executeDraw} disabled={!winningBall} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase hover:bg-indigo-700 shadow-xl disabled:opacity-50">Finalize Result</button>
-              </div>
+  <footer className="fixed bottom-0 left-0 right-0 glass-card p-6 z-40 animate-slide-up border-t-2 border-indigo-400">
+    <div className="max-w-7xl mx-auto space-y-6">
 
-              <div className="flex flex-wrap items-center gap-3 bg-indigo-50 p-2 rounded-2xl border border-indigo-100 w-full xl:w-auto">
-  <input
-    type="text"
-    placeholder="Send Notification Alert..."
-    className="flex-1 xl:w-64 bg-white border border-indigo-200 rounded-xl px-4 py-2 text-sm font-medium outline-none text-slate-900"
-    value={announcementText}
-    onChange={e => setAnnouncementText(e.target.value)}
-  />
+      <div className="flex flex-col xl:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-6">
+        <div className="flex flex-wrap items-center justify-center gap-6">
 
-  <button
-    onClick={sendBroadcast}
-    className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase"
-  >
-    Broadcast
-  </button>
-
-  <button
-    onClick={subscribeToPush}
-    className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase hover:bg-emerald-700"
-  >
-    Enable Push
-  </button>
-
-  <button
-    onClick={() => setShowPassModal(true)}
-    className="p-2 text-indigo-400 hover:text-indigo-600"
-    title="Security Settings"
-  >
-    ⚙️
-  </button>
-</div>
-
-
-            {groundingSources.length > 0 && (
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <p className="text-[8px] font-black uppercase opacity-40">Verification Links:</p>
-                {groundingSources.map((chunk, i) => chunk.web && (
-                  <a key={i} href={chunk.web.uri} target="_blank" rel="noopener noreferrer" className="text-[8px] text-indigo-600 underline font-bold truncate max-w-[150px]">{chunk.web.title || 'Source'}</a>
-                ))}
-              </div>
-            )}
+          <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl border border-slate-200">
+            <span className="text-[9px] font-black uppercase opacity-50 ml-2">Draw Date:</span>
+            <input
+              type="date"
+              className="bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm font-bold outline-none text-slate-900"
+              value={new Date(state.nextDrawDate).toISOString().split('T')[0]}
+              onChange={e => {
+                const date = new Date(e.target.value);
+                date.setHours(19, 45, 0, 0);
+                setState(p => ({ ...p, nextDrawDate: date.toISOString() }));
+              }}
+            />
           </div>
-        </footer>
+
+          <div className="flex items-center gap-3 bg-slate-100 p-2 rounded-2xl border border-slate-200">
+            <span className="text-[9px] font-black uppercase opacity-50 ml-2">Win No:</span>
+            <input
+              type="number"
+              className="w-16 bg-white border border-slate-200 rounded-xl px-2 py-2 text-center text-lg font-black text-slate-900"
+              value={winningBall || ''}
+              onChange={e => setWinningBall(parseInt(e.target.value) || null)}
+            />
+            <button
+              onClick={fetchResult}
+              disabled={isFetchingResult}
+              className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl text-[9px] font-black uppercase disabled:opacity-50"
+            >
+              {isFetchingResult ? '...' : '⚡ AI Sync'}
+            </button>
+          </div>
+
+          <button
+            onClick={executeDraw}
+            disabled={!winningBall}
+            className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase hover:bg-indigo-700 shadow-xl disabled:opacity-50"
+          >
+            Finalize Result
+          </button>
+        </div>
+
+        {/* BROADCAST + PUSH */}
+        <div className="flex flex-wrap items-center gap-3 bg-indigo-50 p-2 rounded-2xl border border-indigo-100 w-full xl:w-auto">
+          <input
+            type="text"
+            placeholder="Send Notification Alert..."
+            className="flex-1 xl:w-64 bg-white border border-indigo-200 rounded-xl px-4 py-2 text-sm font-medium outline-none text-slate-900"
+            value={announcementText}
+            onChange={e => setAnnouncementText(e.target.value)}
+          />
+
+          <button
+            onClick={sendBroadcast}
+            className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase"
+          >
+            Broadcast
+          </button>
+
+          <button
+            onClick={subscribeToPush}
+            className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase hover:bg-emerald-700"
+          >
+            Enable Push
+          </button>
+
+          <button
+            onClick={() => setShowPassModal(true)}
+            className="p-2 text-indigo-400 hover:text-indigo-600"
+            title="Security Settings"
+          >
+            ⚙️
+          </button>
+        </div>
+      </div>
+
+      {groundingSources.length > 0 && (
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <p className="text-[8px] font-black uppercase opacity-40">Verification Links:</p>
+          {groundingSources.map((chunk, i) => chunk.web && (
+            <a
+              key={i}
+              href={chunk.web.uri}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[8px] text-indigo-600 underline font-bold truncate max-w-[150px]"
+            >
+              {chunk.web.title || 'Source'}
+            </a>
+          ))}
+        </div>
       )}
+    </div>
+  </footer>
+)}
 
       {selectedBall && (
         <>
