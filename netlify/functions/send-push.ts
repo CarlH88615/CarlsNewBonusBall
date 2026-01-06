@@ -8,10 +8,11 @@ const supabase = createClient(
 );
 
 webpush.setVapidDetails(
-  'mailto:admin@bonusball.app',
+  'https://mellow-palmier-36a4b3.netlify.app',
   process.env.VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );
+
 
 export const handler: Handler = async () => {
   const { data, error } = await supabase
