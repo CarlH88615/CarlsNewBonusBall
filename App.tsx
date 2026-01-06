@@ -524,12 +524,38 @@ const getPersistedState = () => ({
                 <button onClick={executeDraw} disabled={!winningBall} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-[10px] uppercase hover:bg-indigo-700 shadow-xl disabled:opacity-50">Finalize Result</button>
               </div>
 
-              <div className="flex items-center gap-3 bg-indigo-50 p-2 rounded-2xl border border-indigo-100 w-full xl:w-auto">
-                <input type="text" placeholder="Send Notification Alert..." className="flex-1 xl:w-64 bg-white border border-indigo-200 rounded-xl px-4 py-2 text-sm font-medium outline-none text-slate-900" value={announcementText} onChange={e => setAnnouncementText(e.target.value)} />
-                <button onClick={sendBroadcast} className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase">Broadcast</button>
-                <button onClick={() => setShowPassModal(true)} className="p-2 text-indigo-400 hover:text-indigo-600" title="Security Settings">⚙️</button>
-              </div>
-            </div>
+              <div className="flex flex-wrap items-center gap-3 bg-indigo-50 p-2 rounded-2xl border border-indigo-100 w-full xl:w-auto">
+  <input
+    type="text"
+    placeholder="Send Notification Alert..."
+    className="flex-1 xl:w-64 bg-white border border-indigo-200 rounded-xl px-4 py-2 text-sm font-medium outline-none text-slate-900"
+    value={announcementText}
+    onChange={e => setAnnouncementText(e.target.value)}
+  />
+
+  <button
+    onClick={sendBroadcast}
+    className="px-6 py-2 bg-indigo-600 text-white rounded-xl text-[9px] font-black uppercase"
+  >
+    Broadcast
+  </button>
+
+  <button
+    onClick={subscribeToPush}
+    className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-[9px] font-black uppercase hover:bg-emerald-700"
+  >
+    Enable Push
+  </button>
+
+  <button
+    onClick={() => setShowPassModal(true)}
+    className="p-2 text-indigo-400 hover:text-indigo-600"
+    title="Security Settings"
+  >
+    ⚙️
+  </button>
+</div>
+
 
             {groundingSources.length > 0 && (
               <div className="flex flex-wrap items-center justify-center gap-4">
@@ -582,13 +608,7 @@ const getPersistedState = () => ({
                       <div className="space-y-3">
                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Manual Adjustment (Weeks)</label>
                         <div className="flex gap-2">
-                        <button
-  onClick={subscribeToPush}
-  className="mt-4 px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700"
->
-  Enable Push Notifications
-</button>
-
+                      
                           <input type="number" min="1" className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-900 outline-none focus:border-indigo-600" value={customWeeks} onChange={e => setCustomWeeks(parseInt(e.target.value) || 1)} />
                           <button onClick={() => addWeeks(customWeeks)} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase shadow-lg shadow-indigo-200">Add Weeks</button>
                         </div>
