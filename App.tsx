@@ -40,7 +40,7 @@ const subscribeToPush = async () => {
     return;
   }
 
-  const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+const publicKey = VAPID_PUBLIC_KEY;
   console.log('VAPID key:', publicKey);
 
   if (!publicKey) {
@@ -59,13 +59,23 @@ const subscribeToPush = async () => {
 
   const registration = await navigator.serviceWorker.ready;
 
-  const subscription = await registration.pushManager.subscribe({
+  let subscription;
+try {
+  subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: Uint8Array.from(
       atob(publicKey.replace(/-/g, '+').replace(/_/g, '/')),
       c => c.charCodeAt(0)
     )
   });
+  console.log('✅ Push subscription created', subscription);
+  alert('Push subscription created');
+} catch (err) {
+  console.error('❌ Push subscription failed', err);
+  alert('Push subscription failed – see console');
+  return;
+}
+
 
   const json = subscription.toJSON();
 
