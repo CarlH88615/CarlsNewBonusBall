@@ -27,7 +27,9 @@ const App: React.FC = () => {
     return d;
   };
 
- const subscribeToPush = async () => {
+const subscribeToPush = async () => {
+  console.log('👉 subscribeToPush clicked');
+
   if (!('serviceWorker' in navigator)) {
     alert('Service workers not supported');
     return;
@@ -39,6 +41,8 @@ const App: React.FC = () => {
   }
 
   const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+  console.log('VAPID key:', publicKey);
+
   if (!publicKey) {
     alert('Missing VAPID public key');
     return;
@@ -67,6 +71,7 @@ const App: React.FC = () => {
 
   alert('Push notifications enabled!');
 };
+
 
 
 
