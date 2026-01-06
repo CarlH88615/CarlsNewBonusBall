@@ -370,12 +370,23 @@ const getPersistedState = () => ({
     setState(p => ({...p, balls: p.balls.map(x => x.number === selectedBall ? {...x, paidUntil: referenceDate.toISOString()} : x)}));
   };
 
- const sendBroadcast = async () => {
-  if (!announcementText.trim()) return;
+const sendBroadcast = async () => {
+  const message = announcementText.trim();
+  if (!message) return;
 
   await fetch('/.netlify/functions/send-push', {
-    method: 'POST'
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title: 'Bonus Ball Update',
+      body: message
+    })
   });
+
+  setAnnouncementText('');
+};
+
+
 
   setAnnouncementText('');
 };
