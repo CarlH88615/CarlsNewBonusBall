@@ -11,6 +11,11 @@ import {
   Icons 
 } from './constants';
 
+const SUPABASE_URL = 'https://fsazyqcgpxvgckgllwkw.supabase.co';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
 const App: React.FC = () => {
   const getNextSaturday = (baseDate = new Date()) => {
     const d = new Date(baseDate);
@@ -20,12 +25,8 @@ const App: React.FC = () => {
     return d;
   };
 
-  const [supabaseConfig] = useState(() => ({ 
-    url: 'https://fsazyqcgpxvgckgllwkw.supabase.co', 
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzYXp5cWNncHh2Z2NrZ2xsd2t3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2Mzg0ODksImV4cCI6MjA4MzIxNDQ4OX0.qlLb8m3urY50iDTXjaO9y41lnHNVNWRiwEeO1_WXGqA' 
-  }));
+  
 
-  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [quotaWarning, setQuotaWarning] = useState<string | null>(null);
   const [groundingSources, setGroundingSources] = useState<any[]>([]);
   const [announcementText, setAnnouncementText] = useState('');
@@ -99,12 +100,9 @@ const App: React.FC = () => {
     }
   }, [state.lastAnnouncementId, state.lastAnnouncement]);
 
-  useEffect(() => {
-    setSupabase(createClient(supabaseConfig.url, supabaseConfig.key));
-  }, [supabaseConfig]);
+
 
   useEffect(() => {
-    if (!supabase) return;
     const loadFromCloud = async () => {
       setIsSyncing(true);
       try {
