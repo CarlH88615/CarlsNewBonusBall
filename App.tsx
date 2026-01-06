@@ -27,9 +27,20 @@ const App: React.FC = () => {
     return d;
   };
 
-  const subscribeToPush = async () => {
+ const subscribeToPush = async () => {
   if (!('serviceWorker' in navigator)) {
     alert('Service workers not supported');
+    return;
+  }
+
+  if (!supabase) {
+    alert('Supabase not ready');
+    return;
+  }
+
+  const publicKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+  if (!publicKey) {
+    alert('Missing VAPID public key');
     return;
   }
 
@@ -38,7 +49,7 @@ const App: React.FC = () => {
   const subscription = await registration.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: Uint8Array.from(
-      atob(VAPID_PUBLIC_KEY.replace(/-/g, '+').replace(/_/g, '/')),
+      atob(publicKey.replace(/-/g, '+').replace(/_/g, '/')),
       c => c.charCodeAt(0)
     )
   });
@@ -48,11 +59,15 @@ const App: React.FC = () => {
   await supabase.from('push_subscriptions').insert({
     endpoint: json.endpoint,
     p256dh: json.keys?.p256dh,
-    auth: json.keys?.auth
+    auth: json.keys?.auth,
+    balls: followedBall ? [followedBall] : [],
+    user_name: null,
+    active: true
   });
 
   alert('Push notifications enabled!');
 };
+
 
 
   const [quotaWarning, setQuotaWarning] = useState<string | null>(null);
