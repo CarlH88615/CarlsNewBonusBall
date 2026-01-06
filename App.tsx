@@ -57,7 +57,11 @@ const publicKey = VAPID_PUBLIC_KEY;
     return;
   }
 
-  const registration = await navigator.serviceWorker.ready;
+const registration = await navigator.serviceWorker.getRegistration();
+if (!registration) {
+  alert('Service worker not registered');
+  return;
+}
 
   let subscription;
 try {
