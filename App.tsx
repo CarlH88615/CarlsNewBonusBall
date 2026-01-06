@@ -100,25 +100,25 @@ const App: React.FC = () => {
     }
   }, [state.lastAnnouncementId, state.lastAnnouncement]);
 
+useEffect(() => {
+  const loadFromCloud = async () => {
+    setIsSyncing(true);
+    try {const { data } = await supabase.from('bonus_ball_data').select('state').eq('id', 1).maybeSingle();
+ if (data?.state && Array.isArray(data.state.balls)) {
+  setState(prev => ({
+    ...prev,
+    ...data.state,
+    balls: data.state.balls,
+    aiHistory: data.state.aiHistory || prev.aiHistory || [],
+    adminPassword: data.state.adminPassword || prev.adminPassword || 'carl'
+  }));
 
+  if (!lastProcessedAnnouncementId.current) {
+    lastProcessedAnnouncementId.current =
+      data.state.lastAnnouncementId || 'initial';
+  }
+}
 
-  useEffect(() => {
-    const loadFromCloud = async () => {
-      setIsSyncing(true);
-      try {
-        const { data } = await supabase.from('bonus_ball_data').select('state').eq('id', 1).maybeSingle();
-        if (data?.state) {
-          setState(prev => ({
-            ...data.state,
-            adminPassword: data.state.adminPassword || prev.adminPassword || 'carl',
-            aiHistory: data.state.aiHistory || prev.aiHistory || []
-          }));
-          if (!lastProcessedAnnouncementId.current) {
-            lastProcessedAnnouncementId.current = data.state.lastAnnouncementId || 'initial';
-          }
-        }
-      } catch (e) { console.error(e); } finally { setIsSyncing(false); }
-    };
     loadFromCloud();
 
     const channel = supabase.channel('schema-db-changes')
