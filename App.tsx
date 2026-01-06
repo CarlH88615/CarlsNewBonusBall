@@ -48,6 +48,15 @@ const subscribeToPush = async () => {
     return;
   }
 
+  // 🔔 EXPLICITLY request permission
+  const permission = await Notification.requestPermission();
+  console.log('Notification permission:', permission);
+
+  if (permission !== 'granted') {
+    alert('Notifications not allowed');
+    return;
+  }
+
   const registration = await navigator.serviceWorker.ready;
 
   const subscription = await registration.pushManager.subscribe({
