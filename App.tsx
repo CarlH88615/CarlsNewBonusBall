@@ -351,15 +351,16 @@ const getPersistedState = () => ({
     setState(p => ({...p, balls: p.balls.map(x => x.number === selectedBall ? {...x, paidUntil: referenceDate.toISOString()} : x)}));
   };
 
-  const sendBroadcast = () => {
-    if (!announcementText.trim()) return;
-    setState(prev => ({
-      ...prev,
-      lastAnnouncement: announcementText,
-      lastAnnouncementId: Date.now().toString()
-    }));
-    setAnnouncementText('');
-  };
+ const sendBroadcast = async () => {
+  if (!announcementText.trim()) return;
+
+  await fetch('/.netlify/functions/send-push', {
+    method: 'POST'
+  });
+
+  setAnnouncementText('');
+};
+
 
   const handleLogin = () => {
     if (loginPass === state.adminPassword) { setIsAdmin(true); setShowLogin(false); setLoginPass(''); }
